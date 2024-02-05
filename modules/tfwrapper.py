@@ -230,7 +230,7 @@ def tf_makegraph(tfdata: dict):
                 bold=True,
             )
         )
-        exit()
+        #exit()
     return tfdata
 
 

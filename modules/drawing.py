@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 import click
-
+import json
 import modules.cloud_config as cloud_config
 import modules.helpers as helpers
 
@@ -37,7 +37,20 @@ from resource_classes.aws.robotics import *
 from resource_classes.aws.satellite import *
 from resource_classes.aws.security import *
 from resource_classes.aws.storage import *
+from resource_classes.gcp.compute import *
+from resource_classes.gcp.network import *
+from resource_classes.gcp.storage import *
+from resource_classes.gcp.database import *
+from resource_classes.gcp.operations import *
+from resource_classes.gcp.serverless_computing import *
+from resource_classes.gcp.security import *
+from resource_classes.gcp.devtools import *
+from resource_classes.gcp.container_services import *
+from resource_classes.gcp.api_management import *
+from resource_classes.gcp.data_analytics import *
+from resource_classes.gcp.ai_ml_services import *
 from resource_classes.generic.blank import Blank
+import modules.plantuml as plantuml
 
 avl_classes = dir()
 
@@ -337,7 +350,7 @@ def render_diagram(
     all_drawn_resources_list = list()
     # Setup Canvas
     title = (
-        "Untitled"
+        "Container Diagram"
         if not tfdata["annotations"].get("title")
         else tfdata["annotations"]["title"]
     )
@@ -355,7 +368,14 @@ def render_diagram(
     }
     getattr(sys.modules[__name__], "Node")(**footer_style)
     # Setup Outer cloud boundary
-    cloudGroup = AWSgroup()
+    for resource in tfdata["graphdict"]:
+            resource_type = resource.split(".")[0]
+            break
+    if resource_type.startswith("google"):
+        cloudGroup=GCPgroup()
+    else:
+        cloudGroup = AWSgroup()
+     
     setcluster(cloudGroup)
     tfdata["connected_nodes"] = dict()
     # Draw Nodes and Groups in order of static definitions
@@ -384,3 +404,13 @@ def render_diagram(
     os.remove(path_to_postdot)
     click.echo(f"  Completed!")
     setdiagram(None)
+    unique = helpers.unique_services(tfdata["graphdict"])
+    with open(outfile, "w") as f:
+        json.dump(
+            unique,
+            f,
+            indent=4,
+            sort_keys=True,
+        ) 
+    plantuml.generatecode(outfile)
+    click.echo(f"PlantUML code for this container diagram is saved in architecture.puml file ")

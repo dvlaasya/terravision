@@ -117,6 +117,21 @@ class AWSgroup(Cluster):
         aws_label = f'<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0"><TR><TD><img src="{base_path}/resource_images/aws/general/aws.png"/></TD><TD>{label}</TD></TR></TABLE>>'
         super().__init__(aws_label, defaultdir, aws_graph_attrs)
 
+class GCPgroup(Cluster):
+    def __init__(self, label="GCP", **kwargs):
+        gcp_graph_attrs = {
+            "style": "solid",
+            "pencolor": "black",
+            "margin": "100",
+            "ordering": "in",
+            "penwidth": "2",
+            "center": "true",
+            "labeljust": "l",
+            "_shift": "1",
+        }
+        gcp_label = f'<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0"><TR><TD><img src="{base_path}/resource_images/gcp/general/gcp.png"/></TD><TD>{label}</TD></TR></TABLE>>'
+        super().__init__(gcp_label, defaultdir, gcp_graph_attrs)
+
 
 class OnPrem(Cluster):
     def __init__(self, label="Corporate Datacenter", **kwargs):
